@@ -1,13 +1,17 @@
 $(document).ready(function()
 {
-    $('.reply').click(function()
+    $(document).on('click','.reply',function()
     {
-        let reply_data = $(this).data();
+        let reply_obj = $(this);
+        let reply_data = reply_obj.data();
+        
         $('#reply_modal').dialog({
             autoOpen: false,
             modal: true,
             open:function()
             {
+                $(this).find('input:visible').val('');
+
                 $(this).find('#dialog_parent_id').val(reply_data.parent_id);
                 $(this).find('#dialog_level').val(reply_data.level);
             },
@@ -18,14 +22,17 @@ $(document).ready(function()
                     click: function() {
                       $( this ).dialog( "close" );
 
-                      $.post('/',$(this).find('input').serialize(),function(data)
-                      {
-                          alert(data.message);
-                          if(data.status)
-                          {
-                            location.reload();
-                          }
-                      })
+                      $.post('/',$(this).find('input').serialize(),function(view)
+                      { 
+
+                        if(reply_data.par=="add")
+                        {
+                            $('.comment_section').prepend(view);
+                        }
+                        else{
+                            reply_obj.closest('.row').next('.comment_container').prepend(view);
+                        }
+                      },'html')
                     }
                 },
                 {
